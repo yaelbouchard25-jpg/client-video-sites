@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/sites-de-mes-clients/$1"
+    }
+  ]
+}
