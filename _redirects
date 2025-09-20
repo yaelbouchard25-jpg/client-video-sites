@@ -1,1 +1,1 @@
-/:client/* /sites-de-mes-clients/:client/:splat 200
+/:email/* /sites-de-mes-clients/:email/:splat 200
