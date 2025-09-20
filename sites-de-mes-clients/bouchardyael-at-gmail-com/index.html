@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidéo pour lucas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 40px;
+            font-weight: normal;
+        }
+        
+        .video-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            position: relative;
+            margin-bottom: 60px;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .calendly-title {
+            text-align: center;
+            font-size: 1.8em;
+            color: #000;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        .calendly-container {
+            width: 100%;
+            height: 700px;
+            margin-bottom: 40px;
+        }
+        
+        .calendly-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .footer {
+            background: #1a1a1a;
+            color: #fff;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .calendly-title {
+                font-size: 1.5em;
+            }
+            
+            .calendly-container {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vidéo pour lucas</h1>
+        
+        <div class="video-container">
+            <iframe src="{{DRIVE_VIDEO_URL}}" 
+                    allow="autoplay"
+                    allowfullscreen>
+            </iframe>
+        </div>
+        
+        <div class="calendly-title">
+            Réserve ta session de scaling offerte lucas :
+        </div>
+        
+        <div class="calendly-container">
+            <iframe src="https://calendly.com/scaling-io/session-de-scaling">
+            </iframe>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 Scaling.io - Tous droits réservés</p>
+        <p>Mentions légales - CGV - Politique de confidentialité</p>
+    </div>
+</body>
+</html>
