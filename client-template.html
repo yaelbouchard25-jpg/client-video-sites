@@ -93,7 +93,7 @@
             border-radius: 2px;
         }
         
-        /* VIDEO CONTAINER CORRIGÉ - SANS POINTER-EVENTS NONE */
+        /* VIDEO CONTAINER ULTRA-MINIMAL */
         .video-container {
             position: relative;
             width: 100%;
@@ -101,8 +101,8 @@
             padding-bottom: 56.25%;
             margin: 30px 0;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
             background: #000;
+            cursor: pointer;
         }
 
         .video-container iframe {
@@ -112,20 +112,59 @@
             width: 100%;
             height: 100%;
             border: none;
-            /* SUPPRIMÉ: pointer-events: none; */
-            /* SUPPRIMÉ: border-radius pour être rectangulaire */
+            outline: none !important;
         }
 
-        /* Overlay pour masquer seulement le logo YouTube */
+        /* Masquer SEULEMENT les contrôles du bas et les éléments gênants */
+        .video-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Masquer le logo YouTube et bouton "Regarder sur YouTube" */
         .video-overlay {
             position: absolute;
             bottom: 8px;
             right: 8px;
-            width: 68px;
-            height: 25px;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10;
+            width: 100px;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 15;
             pointer-events: none;
+        }
+
+        /* Masquer le bouton de partage et autres éléments du coin */
+        .video-corner-overlay {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 80px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        /* Effet hover subtil uniquement sur le container */
+        .video-container:hover {
+            transform: scale(1.005);
+            transition: transform 0.3s ease;
+        }
+
+        /* Supprimer tous les outlines et focus SAUF le bouton play YouTube */
+        .video-container *:focus,
+        .video-container *:hover,
+        .video-container *:active {
+            outline: none !important;
+            border: none !important;
+            box-shadow: none !important;
         }
         
         .calendly-container {
@@ -256,6 +295,7 @@
                         allow="autoplay; encrypted-media">
                 </iframe>
                 <div class="video-overlay"></div>
+                <div class="video-corner-overlay"></div>
             </div>
         </div>
         
