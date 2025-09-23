@@ -26,17 +26,6 @@
             overflow: hidden;
         }
         
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.3;
-        }
-        
         .header-content {
             position: relative;
             z-index: 2;
@@ -78,39 +67,38 @@
             margin-bottom: 30px;
             text-align: center;
             font-weight: 600;
-            position: relative;
         }
         
-        .section h2::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 2px;
-        }
-        
-        /* LECTEUR VIDEO - IFRAME DIRECTE CLIQUABLE */
+        /* LECTEUR VIDEO SANS THUMBNAIL - DIRECT */
         .video-container {
             position: relative;
             width: 100%;
+            max-width: 100%;
             height: 0;
             padding-bottom: 56.25%;
-            margin: 30px 0;
+            background-color: black;
+            margin: 0 auto;
             overflow: hidden;
-            background: #000;
         }
-
-        .video-container iframe {
+        
+        .player {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border: none;
+            z-index: 1;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 3;
+            cursor: pointer;
         }
         
         .calendly-container {
@@ -195,11 +183,11 @@
     <div class="container">
         <div class="section">
             <h2><span class="emoji">🎥</span>Votre vidéo personnalisée</h2>
+            
+            <!-- LECTEUR VIDEO DIRECT SANS THUMBNAIL -->
             <div class="video-container">
-                <iframe src="{{DRIVE_URL}}" 
-                        allowfullscreen
-                        allow="autoplay; encrypted-media">
-                </iframe>
+                <div id="player" class="player"></div>
+                <div id="video-overlay" class="video-overlay"></div>
             </div>
         </div>
         
@@ -222,9 +210,74 @@
         <p>© 2025 Scaling.io - Automatisation & Growth Hacking</p>
     </div>
 
+    <!-- JAVASCRIPT OVERLAY PLAY/PAUSE GÉANT -->
     <script>
-    // Script minimal - l'iframe gère tout directement
-    console.log('Page chargée - vidéo prête');
+    function createYouTubePlayer(videoId) {
+        // Add the YouTube iframe API script if not already added
+        if (!document.getElementById('youtube-iframe-api')) {
+            const script = document.createElement('script');
+            script.id = 'youtube-iframe-api';
+            script.src = 'https://www.youtube.com/iframe_api';
+            document.body.appendChild(script);
+        }
+
+        // YouTube Player setup
+        let player;
+
+        window.onYouTubeIframeAPIReady = function () {
+            player = new YT.Player('player', {
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 0,        // Pas de lecture auto
+                    mute: 0,           // Pas muet
+                    controls: 0,       // AUCUNE barre de contrôles
+                    rel: 0,            // Pas de vidéos suggérées
+                    modestbranding: 1, // Masque logo YouTube
+                    showinfo: 0,       // Pas d'infos vidéo
+                    iv_load_policy: 3, // Pas d'annotations
+                    disablekb: 1,      // Désactive clavier
+                    enablejsapi: 1,    // Active API JavaScript
+                    fs: 0,             // Pas de plein écran
+                    cc_load_policy: 0  // Pas de sous-titres
+                },
+                events: {
+                    onReady: function () {
+                        setupEventListeners(player);
+                    }
+                }
+            });
+        };
+
+        // OVERLAY GÉANT PLAY/PAUSE
+        function setupEventListeners(player) {
+            const overlay = document.getElementById('video-overlay');
+
+            overlay.addEventListener('click', () => {
+                const state = player.getPlayerState();
+                
+                // État 1 = en lecture → mettre en pause
+                if (state === 1) {
+                    player.pauseVideo();
+                }
+                // État 2 = en pause, État -1 = pas démarré, État 5 = en attente → lancer
+                else if (state === 2 || state === -1 || state === 5 || state === 0) {
+                    player.playVideo();
+                }
+            });
+
+            // Empêcher tous les autres événements sur l'iframe
+            const iframe = document.querySelector('#player iframe');
+            if (iframe) {
+                iframe.style.pointerEvents = 'none';
+            }
+        }
+    }
+
+    // Initialize the player when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Remplacez par l'ID de votre vidéo YouTube
+        createYouTubePlayer('{{YOUTUBE_ID}}');
+    });
     </script>
 </body>
 </html>
