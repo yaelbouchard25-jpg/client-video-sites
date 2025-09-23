@@ -93,7 +93,7 @@
             border-radius: 2px;
         }
         
-        /* LECTEUR VIDEO FINAL - SANS PREVIEW */
+        /* LECTEUR VIDEO - IFRAME DIRECTE CLIQUABLE */
         .video-container {
             position: relative;
             width: 100%;
@@ -111,17 +111,6 @@
             width: 100%;
             height: 100%;
             border: none;
-        }
-
-        .video-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            z-index: 10;
-            cursor: pointer;
         }
         
         .calendly-container {
@@ -211,7 +200,6 @@
                         allowfullscreen
                         allow="autoplay; encrypted-media">
                 </iframe>
-                <div class="video-overlay" onclick="toggleVideo(this)"></div>
             </div>
         </div>
         
@@ -235,22 +223,8 @@
     </div>
 
     <script>
-    function toggleVideo(overlay) {
-        const iframe = overlay.parentElement.querySelector('iframe');
-        
-        // Tentative de contrôle via postMessage
-        try {
-            iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        } catch(e) {
-            // Si le contrôle API ne fonctionne pas, on reload l'iframe pour "pause"
-            const currentSrc = iframe.src;
-            if (currentSrc.includes('autoplay=1')) {
-                iframe.src = currentSrc.replace('autoplay=1', 'autoplay=0');
-            } else {
-                iframe.src = currentSrc.replace('autoplay=0', 'autoplay=1');
-            }
-        }
-    }
+    // Script minimal - l'iframe gère tout directement
+    console.log('Page chargée - vidéo prête');
     </script>
 </body>
 </html>
