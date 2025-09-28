@@ -3,89 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scaling.io - Pages Clients</title>
+    <title>404 - Page non trouvée</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #ffffff;
         }
         .container {
             text-align: center;
-            color: white;
-            padding: 60px 40px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
         }
-        h1 {
-            font-size: 3.2em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-            font-weight: 700;
+        .error-code {
+            font-size: 8rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2, #c471ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(116, 75, 162, 0.4);
         }
-        .subtitle {
-            font-size: 1.4em;
-            margin-bottom: 40px;
-            opacity: 0.95;
+        .message {
+            font-size: 1.8rem;
             font-weight: 300;
+            color: #e0e0e0;
+            margin-bottom: 1rem;
         }
-        .features {
-            margin: 40px 0;
+        .submessage {
+            font-size: 1.1rem;
+            color: #b3b3b3;
+            font-weight: 300;
+            line-height: 1.5;
         }
-        .feature {
-            font-size: 1.2em;
-            margin: 15px 0;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            border-left: 4px solid #ffd700;
-        }
-        .logo {
-            font-weight: 700;
-            color: #ffd700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-        .status {
-            margin-top: 40px;
-            padding: 20px;
-            background: rgba(46, 204, 113, 0.2);
-            border-radius: 10px;
-            border: 1px solid rgba(46, 204, 113, 0.4);
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 6rem;
+            }
+            .message {
+                font-size: 1.4rem;
+            }
+            .submessage {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 <span class="logo">Scaling.io</span></h1>
-        <p class="subtitle">Plateforme d'automatisation clients</p>
-        
-        <div class="features">
-            <div class="feature">
-                ✨ Pages clients générées automatiquement
-            </div>
-            <div class="feature">
-                📅 Calendrier Calendly intégré
-            </div>
-            <div class="feature">
-                🎥 Vidéos YouTube personnalisées
-            </div>
-            <div class="feature">
-                ⚡ Déclenchement depuis Google Sheets
-            </div>
-        </div>
-        
-        <div class="status">
-            🟢 Système opérationnel
-        </div>
+        <div class="error-code">404</div>
+        <p class="message">Page non trouvée</p>
+        <p class="submessage">Désolé, cette page n'existe pas.<br>Veuillez vérifier votre URL.</p>
     </div>
 </body>
 </html>
