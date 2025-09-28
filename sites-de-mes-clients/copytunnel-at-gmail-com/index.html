@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>yael - Scaling.io</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.4em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .section h2 {
+            color: #2d3748;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        /* LECTEUR VIDEO SANS THUMBNAIL - DIRECT */
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            background-color: black;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 3;
+            cursor: pointer;
+        }
+        
+        .calendly-container {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            background: white;
+            min-height: 700px;
+        }
+        
+        .calendly-container iframe {
+            width: 100%;
+            height: 700px;
+            border: none;
+        }
+        
+        .cta-section {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            margin: 40px 0;
+        }
+        
+        .cta-section h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .cta-section p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: #2d3748;
+            color: white;
+            margin-top: 60px;
+        }
+        
+        .footer p {
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+        
+        .emoji {
+            font-size: 1.3em;
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .section {
+                padding: 30px 20px;
+            }
+            
+            .container {
+                padding: 30px 15px;
+            }
+            
+            .calendly-container iframe {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1><span class="emoji">🎯</span>Bonjour yael !</h1>
+            <p class="subtitle">Votre espace personnalisé Scaling.io</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="section">
+            <h2><span class="emoji">🎥</span>Votre vidéo personnalisée</h2>
+            
+            <!-- LECTEUR VIDEO DIRECT SANS THUMBNAIL -->
+            <div class="video-container">
+                <div id="player" class="player"></div>
+                <div id="video-overlay" class="video-overlay"></div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h3>Prêt à passer à l'étape suivante ?</h3>
+            <p>Réservez dès maintenant votre session de scaling personnalisée</p>
+        </div>
+        
+        <div class="section">
+            <h2><span class="emoji">📅</span>Réservez votre session</h2>
+            <div class="calendly-container">
+                <iframe src="https://calendly.com/scaling-io/session-de-scaling" 
+                        frameborder="0">
+                </iframe>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 Scaling.io - Automatisation & Growth Hacking</p>
+    </div>
+
+    <!-- JAVASCRIPT OVERLAY PLAY/PAUSE GÉANT -->
+    <script>
+    function createYouTubePlayer(videoId) {
+        // Add the YouTube iframe API script if not already added
+        if (!document.getElementById('youtube-iframe-api')) {
+            const script = document.createElement('script');
+            script.id = 'youtube-iframe-api';
+            script.src = 'https://www.youtube.com/iframe_api';
+            document.body.appendChild(script);
+        }
+
+        // YouTube Player setup
+        let player;
+
+        window.onYouTubeIframeAPIReady = function () {
+            player = new YT.Player('player', {
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 0,        // Pas de lecture auto
+                    mute: 0,           // Pas muet
+                    controls: 0,       // AUCUNE barre de contrôles
+                    rel: 0,            // Pas de vidéos suggérées
+                    modestbranding: 1, // Masque logo YouTube
+                    showinfo: 0,       // Pas d'infos vidéo
+                    iv_load_policy: 3, // Pas d'annotations
+                    disablekb: 1,      // Désactive clavier
+                    enablejsapi: 1,    // Active API JavaScript
+                    fs: 0,             // Pas de plein écran
+                    cc_load_policy: 0  // Pas de sous-titres
+                },
+                events: {
+                    onReady: function () {
+                        setupEventListeners(player);
+                    }
+                }
+            });
+        };
+
+        // OVERLAY GÉANT PLAY/PAUSE
+        function setupEventListeners(player) {
+            const overlay = document.getElementById('video-overlay');
+
+            overlay.addEventListener('click', () => {
+                const state = player.getPlayerState();
+                
+                // État 1 = en lecture → mettre en pause
+                if (state === 1) {
+                    player.pauseVideo();
+                }
+                // État 2 = en pause, État -1 = pas démarré, État 5 = en attente → lancer
+                else if (state === 2 || state === -1 || state === 5 || state === 0) {
+                    player.playVideo();
+                }
+            });
+
+            // Empêcher tous les autres événements sur l'iframe
+            const iframe = document.querySelector('#player iframe');
+            if (iframe) {
+                iframe.style.pointerEvents = 'none';
+            }
+        }
+    }
+
+    // Initialize the player when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Remplacez par l'ID de votre vidéo YouTube
+        createYouTubePlayer('p5lxR-sip_4');
+    });
+    </script>
+</body>
+</html>
