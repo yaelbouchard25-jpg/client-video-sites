@@ -1,8 +1,8 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/sites-de-mes-clients/$1"
+      "src": "/(.*)",
+      "dest": "/index.py"
     }
   ]
 }
