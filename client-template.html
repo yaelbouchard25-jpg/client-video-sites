@@ -60,7 +60,7 @@
             font-weight: 600;
         }
         
-        /* Message personnalisé sous le header */
+
         .welcome-message {
             text-align: center;
             padding: 50px 20px 30px 20px;
@@ -75,7 +75,7 @@
             margin-bottom: 0;
         }
         
-        /* LECTEUR VIDEO SANS THUMBNAIL - DIRECT (IDENTIQUE) */
+
         .video-container {
             position: relative;
             width: 100%;
@@ -113,7 +113,7 @@
             min-height: 700px;
         }
         
-        /* Bouton CTA qui apparaît après 30 secondes */
+
         .cta-button {
             text-align: center;
             margin: 50px auto 0 auto;
@@ -123,17 +123,20 @@
         
         .cta-button a {
             display: inline-block;
-            background: #4A90E2;
-            color: white;
-            padding: 25px 50px;
-            font-size: 1.8em;
-            font-weight: 700;
+            background: #7DEFE8;
+            color: #000000;
+            padding: 20px 45px;
+            font-size: 1.6em;
+            font-weight: 900;
             text-decoration: none;
-            border-radius: 10px;
+            border-radius: 8px;
             transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 1s ease-in;
-            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            box-shadow: 0 4px 15px rgba(125, 239, 232, 0.4);
             opacity: 0;
             visibility: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid #000000;
         }
         
         .cta-button a.show {
@@ -143,8 +146,8 @@
         
         .cta-button a:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
-            background: #3A7BC8;
+            box-shadow: 0 8px 25px rgba(125, 239, 232, 0.5);
+            background: #6BDDD6;
         }
         
         .calendly-container iframe {
@@ -153,7 +156,7 @@
             border: none;
         }
         
-        /* Nouveau style pour le texte de réservation simplifié */
+
         .reservation-title {
             text-align: center;
             font-size: 2.5em;
@@ -229,31 +232,30 @@
         </div>
         
         <div class="section">
-            <!-- LECTEUR VIDEO DIRECT SANS THUMBNAIL (IDENTIQUE) -->
+
             <div class="video-container">
                 <div id="player" class="player"></div>
                 <div id="video-overlay" class="video-overlay"></div>
             </div>
         </div>
         
-        <!-- BOUTON QUI APPARAÎT APRÈS 30 SECONDES -->
+
         <div id="cta-button" class="cta-button">
             <a id="cta-link" href="https://calendly.com/scaling-io/session-de-scaling" target="_blank">
-                Réserve Ta Session Gratuite {{CLIENT_NAME}} >>
+                RÉSERVE TA SESSION GRATUITE {{CLIENT_NAME}} >>
             </a>
         </div>
     </div>
     
     <div class="footer">
-        <p>© 2025 Scaling.io | Tous droits réservés</p>
+        <p>© 2025 Scaling.io</p>
         <p>
-            <a href="mailto:contact@scaling.io">Contact</a> | 
-            <a href="#">Mentions légales</a> | 
-            <a href="#">CGV</a>
+            <a href="contact.html">Contact</a> | 
+            <a href="cgv.html">CGV</a>
         </p>
     </div>
 
-    <!-- JAVASCRIPT OVERLAY PLAY/PAUSE GÉANT + BOUTON APRÈS 30s -->
+
     <script>
     function createYouTubePlayer(videoId) {
         // Add the YouTube iframe API script if not already added
@@ -264,7 +266,7 @@
             document.body.appendChild(script);
         }
 
-        // YouTube Player setup
+
         let player;
 
         window.onYouTubeIframeAPIReady = function () {
