@@ -60,7 +60,14 @@
             font-weight: 600;
         }
         
-
+        /* Message personnalisé sous le header */
+        .welcome-message {
+            text-align: center;
+            padding: 50px 20px 30px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
         .welcome-message {
             text-align: center;
             padding: 50px 20px 30px 20px;
@@ -75,7 +82,7 @@
             margin-bottom: 0;
         }
         
-
+        /* LECTEUR VIDEO SANS THUMBNAIL - DIRECT (IDENTIQUE) */
         .video-container {
             position: relative;
             width: 100%;
@@ -113,7 +120,6 @@
             min-height: 700px;
         }
         
-
         .cta-button {
             text-align: center;
             margin: 50px auto 0 auto;
@@ -156,7 +162,7 @@
             border: none;
         }
         
-
+        /* Nouveau style pour le texte de réservation simplifié */
         .reservation-title {
             text-align: center;
             font-size: 2.5em;
@@ -176,7 +182,7 @@
         
         .footer p {
             opacity: 0.7;
-            margin: 5px 0;
+            margin: 0;
         }
         
         .footer a {
@@ -232,14 +238,12 @@
         </div>
         
         <div class="section">
-
             <div class="video-container">
                 <div id="player" class="player"></div>
                 <div id="video-overlay" class="video-overlay"></div>
             </div>
         </div>
         
-
         <div id="cta-button" class="cta-button">
             <a id="cta-link" href="https://calendly.com/scaling-io/session-de-scaling" target="_blank">
                 RÉSERVE TA SESSION GRATUITE {{CLIENT_NAME}} >>
@@ -248,17 +252,11 @@
     </div>
     
     <div class="footer">
-        <p>© 2025 Scaling.io</p>
-        <p>
-            <a href="contact.html">Contact</a> | 
-            <a href="cgv.html">CGV</a>
-        </p>
+        <p>© 2025 Scaling.io | <a href="contact.html">Contact</a> | <a href="cgv.html">CGV</a></p>
     </div>
-
 
     <script>
     function createYouTubePlayer(videoId) {
-        // Add the YouTube iframe API script if not already added
         if (!document.getElementById('youtube-iframe-api')) {
             const script = document.createElement('script');
             script.id = 'youtube-iframe-api';
@@ -266,24 +264,23 @@
             document.body.appendChild(script);
         }
 
-
         let player;
 
         window.onYouTubeIframeAPIReady = function () {
             player = new YT.Player('player', {
                 videoId: videoId,
                 playerVars: {
-                    autoplay: 0,        // Pas de lecture auto
-                    mute: 0,           // Pas muet
-                    controls: 0,       // AUCUNE barre de contrôles
-                    rel: 0,            // Pas de vidéos suggérées
-                    modestbranding: 1, // Masque logo YouTube
-                    showinfo: 0,       // Pas d'infos vidéo
-                    iv_load_policy: 3, // Pas d'annotations
-                    disablekb: 1,      // Désactive clavier
-                    enablejsapi: 1,    // Active API JavaScript
-                    fs: 0,             // Pas de plein écran
-                    cc_load_policy: 0  // Pas de sous-titres
+                    autoplay: 0,
+                    mute: 0,
+                    controls: 0,
+                    rel: 0,
+                    modestbranding: 1,
+                    showinfo: 0,
+                    iv_load_policy: 3,
+                    disablekb: 1,
+                    enablejsapi: 1,
+                    fs: 0,
+                    cc_load_policy: 0
                 },
                 events: {
                     onReady: function () {
@@ -294,42 +291,35 @@
             });
         };
 
-        // OVERLAY GÉANT PLAY/PAUSE
         function setupEventListeners(player) {
             const overlay = document.getElementById('video-overlay');
 
             overlay.addEventListener('click', () => {
                 const state = player.getPlayerState();
                 
-                // État 1 = en lecture → mettre en pause
                 if (state === 1) {
                     player.pauseVideo();
                 }
-                // État 2 = en pause, État -1 = pas démarré, État 5 = en attente → lancer
                 else if (state === 2 || state === -1 || state === 5 || state === 0) {
                     player.playVideo();
                 }
             });
 
-            // Empêcher tous les autres événements sur l'iframe
             const iframe = document.querySelector('#player iframe');
             if (iframe) {
                 iframe.style.pointerEvents = 'none';
             }
         }
         
-        // AFFICHER LE BOUTON APRÈS 30 SECONDES
         function showButtonAfter30Seconds() {
             setTimeout(function() {
                 const ctaLink = document.getElementById('cta-link');
                 ctaLink.classList.add('show');
-            }, 30000); // 30000 millisecondes = 30 secondes
+            }, 30000);
         }
     }
 
-    // Initialize the player when page loads
     document.addEventListener('DOMContentLoaded', function() {
-        // Remplacez par l'ID de votre vidéo YouTube
         createYouTubePlayer('{{YOUTUBE_ID}}');
     });
     </script>
