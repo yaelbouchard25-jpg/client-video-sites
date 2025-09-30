@@ -123,6 +123,38 @@
             min-height: 700px;
         }
         
+        /* Bouton CTA qui apparaît après 30 secondes */
+        .cta-button {
+            display: none;
+            text-align: center;
+            margin: 50px auto;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+        
+        .cta-button.show {
+            display: block;
+            opacity: 1;
+        }
+        
+        .cta-button a {
+            display: inline-block;
+            background: #000000;
+            color: white;
+            padding: 25px 50px;
+            font-size: 1.8em;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cta-button a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
         .calendly-container iframe {
             width: 100%;
             height: 700px;
@@ -200,7 +232,7 @@
     
     <div class="container">
         <div class="welcome-message">
-            <h2>Bonjour {{CLIENT_NAME}} 👋</h2>
+            <h2>Bonjour {{CLIENT_NAME}}</h2>
             <p>J'ai créé cette vidéo personnalisée pour toi</p>
         </div>
         
@@ -212,14 +244,11 @@
             </div>
         </div>
         
-        <h2 class="reservation-title">Réserve Ta Session de Scaling Gratuite {{CLIENT_NAME}} :</h2>
-        
-        <div class="section">
-            <div class="calendly-container">
-                <iframe src="https://calendly.com/scaling-io/session-de-scaling" 
-                        frameborder="0">
-                </iframe>
-            </div>
+        <!-- BOUTON QUI APPARAÎT APRÈS 30 SECONDES -->
+        <div id="cta-button" class="cta-button">
+            <a href="https://calendly.com/scaling-io/session-de-scaling" target="_blank">
+                Réserve Ta Session Gratuite {{CLIENT_NAME}}
+            </a>
         </div>
     </div>
     
@@ -232,7 +261,7 @@
         </p>
     </div>
 
-    <!-- JAVASCRIPT OVERLAY PLAY/PAUSE GÉANT (IDENTIQUE) -->
+    <!-- JAVASCRIPT OVERLAY PLAY/PAUSE GÉANT + BOUTON APRÈS 30s -->
     <script>
     function createYouTubePlayer(videoId) {
         // Add the YouTube iframe API script if not already added
@@ -265,6 +294,7 @@
                 events: {
                     onReady: function () {
                         setupEventListeners(player);
+                        showButtonAfter30Seconds();
                     }
                 }
             });
@@ -292,6 +322,14 @@
             if (iframe) {
                 iframe.style.pointerEvents = 'none';
             }
+        }
+        
+        // AFFICHER LE BOUTON APRÈS 30 SECONDES
+        function showButtonAfter30Seconds() {
+            setTimeout(function() {
+                const ctaButton = document.getElementById('cta-button');
+                ctaButton.classList.add('show');
+            }, 30000); // 30000 millisecondes = 30 secondes
         }
     }
 
