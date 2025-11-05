@@ -362,8 +362,10 @@
         
         function showButtonAfter30Seconds() {
             setTimeout(function() {
-                const ctaLink = document.getElementById('cta-link');
-                ctaLink.classList.add('show');
+                const ctaLink = document.getElementById('cta-link-below');
+                if (ctaLink) {
+                    ctaLink.classList.add('show');
+                }
             }, 30000);
         }
     }
