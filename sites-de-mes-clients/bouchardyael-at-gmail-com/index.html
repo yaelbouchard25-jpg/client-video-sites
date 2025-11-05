@@ -306,13 +306,40 @@
         function showButtonAfter30Seconds() {
             setTimeout(function() {
                 const ctaLink = document.getElementById('cta-link');
-                ctaLink.classList.add('show');
+                if (ctaLink) {
+                    ctaLink.classList.add('show');
+                }
             }, 30000);
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         createYouTubePlayer('9SCVIKCCUqw');
+
+        // Récupérer les paramètres URL (prenom et email)
+        const urlParams = new URLSearchParams(window.location.search);
+        const prenom = urlParams.get('prenom') || '';
+        const email = urlParams.get('email') || '';
+
+        // Mettre à jour le lien CTA Calendly avec les valeurs récupérées
+        const ctaLink = document.getElementById('cta-link');
+        if (ctaLink) {
+            const baseUrl = 'https://calendly.com/scaling-io/session-de-scaling';
+            const params = [];
+
+            if (prenom) {
+                params.push('name=' + encodeURIComponent(prenom));
+            }
+            if (email) {
+                params.push('email=' + encodeURIComponent(email));
+            }
+
+            if (params.length > 0) {
+                ctaLink.href = baseUrl + '?' + params.join('&');
+            } else {
+                ctaLink.href = baseUrl;
+            }
+        }
     });
     </script>
 </body>
