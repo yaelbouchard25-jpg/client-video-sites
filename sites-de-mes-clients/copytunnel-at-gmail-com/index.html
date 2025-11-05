@@ -281,14 +281,14 @@
             </div>
 
             <div id="cta-below-video" class="cta-button" style="margin-top: 40px; padding-bottom: 0;">
-                <a id="cta-link-below" href="https://tally.so/r/m6bb8O?prenom={{prenom}}&email={{email}}" target="_blank" class="show">
+                <a id="cta-link-below" href="https://tally.so/r/m6bb8O" target="_blank">
                     RÉSERVE TA SESSION GRATUITE Yael >>
                 </a>
             </div>
         </div>
         
         <div id="cta-button" class="cta-button">
-            <a id="cta-link" href="https://formbricks.com/s/cmhhpfl432m92ad013e7zfysy?prenom={{prenom}}" target="_blank">
+            <a id="cta-link" href="https://formbricks.com/s/cmhhpfl432m92ad013e7zfysy" target="_blank">
                 RÉSERVE TA SESSION GRATUITE Yael >>
             </a>
         </div>
@@ -368,14 +368,57 @@
         
         function showButtonAfter30Seconds() {
             setTimeout(function() {
+                const ctaLinkBelow = document.getElementById('cta-link-below');
                 const ctaLink = document.getElementById('cta-link');
-                ctaLink.classList.add('show');
+                if (ctaLinkBelow) {
+                    ctaLinkBelow.classList.add('show');
+                }
+                if (ctaLink) {
+                    ctaLink.classList.add('show');
+                }
             }, 30000);
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         createYouTubePlayer('9YTR9UdGouI');
+
+        // Récupérer les paramètres URL (prenom et email)
+        const urlParams = new URLSearchParams(window.location.search);
+        const prenom = urlParams.get('prenom') || '';
+        const email = urlParams.get('email') || '';
+
+        // Mettre à jour le premier lien CTA (Tally) avec les valeurs récupérées
+        const ctaLinkBelow = document.getElementById('cta-link-below');
+        if (ctaLinkBelow) {
+            const baseUrlTally = 'https://tally.so/r/m6bb8O';
+            const params = [];
+
+            if (prenom) {
+                params.push('prenom=' + encodeURIComponent(prenom));
+            }
+            if (email) {
+                params.push('email=' + encodeURIComponent(email));
+            }
+
+            if (params.length > 0) {
+                ctaLinkBelow.href = baseUrlTally + '?' + params.join('&');
+            } else {
+                ctaLinkBelow.href = baseUrlTally;
+            }
+        }
+
+        // Mettre à jour le second lien CTA (Formbricks) avec le prénom
+        const ctaLink = document.getElementById('cta-link');
+        if (ctaLink) {
+            const baseUrlFormbricks = 'https://formbricks.com/s/cmhhpfl432m92ad013e7zfysy';
+
+            if (prenom) {
+                ctaLink.href = baseUrlFormbricks + '?prenom=' + encodeURIComponent(prenom);
+            } else {
+                ctaLink.href = baseUrlFormbricks;
+            }
+        }
     });
     </script>
 </body>
