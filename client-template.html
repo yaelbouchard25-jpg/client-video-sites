@@ -371,16 +371,31 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        createYouTubePlayer('{{YOUTUBE_ID}}');
-
-        // Récupérer les paramètres URL (prenom et email)
+        // Récupérer tous les paramètres URL
         const urlParams = new URLSearchParams(window.location.search);
         const prenom = urlParams.get('prenom') || '';
         const email = urlParams.get('email') || '';
+        const videoId = urlParams.get('video_id') || '{{YOUTUBE_ID}}'; // Fallback sur template si absent
+        const clientName = urlParams.get('client_name') || '{{CLIENT_NAME}}'; // Fallback sur template si absent
 
-        // Mettre à jour le lien CTA avec les valeurs récupérées
+        // Créer le player YouTube avec l'ID de vidéo récupéré
+        createYouTubePlayer(videoId);
+
+        // Mettre à jour le titre avec le nom du client
+        const welcomeTitle = document.querySelector('.welcome-message h2');
+        if (welcomeTitle && clientName) {
+            welcomeTitle.textContent = 'Pour ' + clientName;
+        }
+
+        // Mettre à jour le texte du CTA avec le nom du client
         const ctaLinkBelow = document.getElementById('cta-link-below');
         if (ctaLinkBelow) {
+            // Mettre à jour le texte du bouton
+            if (clientName) {
+                ctaLinkBelow.textContent = 'RÉSERVE TA SESSION GRATUITE ' + clientName + ' >>';
+            }
+
+            // Mettre à jour le lien avec les paramètres prenom et email
             const baseUrl = 'https://tally.so/r/m6bb8O';
             const params = [];
 
