@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{CLIENT_NAME}} - Scaling.io</title>
+    <title>Session Personnalisée - Scaling.io</title>
     <style>
         /* Import Inter font from Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
@@ -269,7 +269,7 @@
     
     <div class="container">
         <div class="welcome-message">
-            <h2>Pour {{CLIENT_NAME}}</h2>
+            <h2 id="welcome-title">Pour toi</h2>
         </div>
         
         <div class="section">
@@ -282,7 +282,7 @@
 
             <div id="cta-below-video" class="cta-button" style="margin-top: 40px; padding-bottom: 0;">
                 <a id="cta-link-below" href="https://tally.so/r/m6bb8O" target="_blank" class="show">
-                    RÉSERVE TA SESSION GRATUITE {{CLIENT_NAME}} >>
+                    RÉSERVE TA SESSION GRATUITE >>
                 </a>
             </div>
         </div>
@@ -373,7 +373,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Récupérer tous les paramètres URL
         const urlParams = new URLSearchParams(window.location.search);
-        const prenom = urlParams.get('prenom') || '{{CLIENT_NAME}}'; // Fallback sur template si absent
+        const prenom = urlParams.get('prenom') || '';
         const email = urlParams.get('email') || '';
         const videoId = urlParams.get('video_id') || '{{YOUTUBE_ID}}'; // Fallback sur template si absent
 
@@ -381,7 +381,7 @@
         createYouTubePlayer(videoId);
 
         // Mettre à jour le titre avec le prénom
-        const welcomeTitle = document.querySelector('.welcome-message h2');
+        const welcomeTitle = document.getElementById('welcome-title');
         if (welcomeTitle && prenom) {
             welcomeTitle.textContent = 'Pour ' + prenom;
         }
@@ -398,7 +398,7 @@
             const baseUrl = 'https://tally.so/r/m6bb8O';
             const params = [];
 
-            if (prenom && prenom !== '{{CLIENT_NAME}}') {
+            if (prenom) {
                 params.push('prenom=' + encodeURIComponent(prenom));
             }
             if (email) {
