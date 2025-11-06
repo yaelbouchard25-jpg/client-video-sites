@@ -373,33 +373,32 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Récupérer tous les paramètres URL
         const urlParams = new URLSearchParams(window.location.search);
-        const prenom = urlParams.get('prenom') || '';
+        const prenom = urlParams.get('prenom') || '{{CLIENT_NAME}}'; // Fallback sur template si absent
         const email = urlParams.get('email') || '';
         const videoId = urlParams.get('video_id') || '{{YOUTUBE_ID}}'; // Fallback sur template si absent
-        const clientName = urlParams.get('client_name') || '{{CLIENT_NAME}}'; // Fallback sur template si absent
 
         // Créer le player YouTube avec l'ID de vidéo récupéré
         createYouTubePlayer(videoId);
 
-        // Mettre à jour le titre avec le nom du client
+        // Mettre à jour le titre avec le prénom
         const welcomeTitle = document.querySelector('.welcome-message h2');
-        if (welcomeTitle && clientName) {
-            welcomeTitle.textContent = 'Pour ' + clientName;
+        if (welcomeTitle && prenom) {
+            welcomeTitle.textContent = 'Pour ' + prenom;
         }
 
-        // Mettre à jour le texte du CTA avec le nom du client
+        // Mettre à jour le texte du CTA avec le prénom
         const ctaLinkBelow = document.getElementById('cta-link-below');
         if (ctaLinkBelow) {
             // Mettre à jour le texte du bouton
-            if (clientName) {
-                ctaLinkBelow.textContent = 'RÉSERVE TA SESSION GRATUITE ' + clientName + ' >>';
+            if (prenom) {
+                ctaLinkBelow.textContent = 'RÉSERVE TA SESSION GRATUITE ' + prenom + ' >>';
             }
 
             // Mettre à jour le lien avec les paramètres prenom et email
             const baseUrl = 'https://tally.so/r/m6bb8O';
             const params = [];
 
-            if (prenom) {
+            if (prenom && prenom !== '{{CLIENT_NAME}}') {
                 params.push('prenom=' + encodeURIComponent(prenom));
             }
             if (email) {
