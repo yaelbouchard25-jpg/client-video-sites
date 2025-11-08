@@ -269,36 +269,33 @@
                 calParams.push(`email=${encodeURIComponent(params.email)}`);
             }
 
-            // Métadonnées (toutes les autres infos)
-            if (params.source) {
-                calParams.push(`metadata[source]=${encodeURIComponent(params.source)}`);
-            }
+            // Métadonnées (toutes les autres infos) - PASSER MÊME SI VIDES
+            // Source
+            calParams.push(`metadata[source]=${encodeURIComponent(params.source || '')}`);
 
-            if (params.confirmation) {
-                calParams.push(`metadata[confirmation]=${encodeURIComponent(params.confirmation)}`);
-            }
+            // Confirmation
+            calParams.push(`metadata[confirmation]=${encodeURIComponent(params.confirmation || '')}`);
 
-            if (params.telephone) {
-                calParams.push(`metadata[telephone]=${encodeURIComponent(params.telephone)}`);
-            }
+            // Téléphone
+            calParams.push(`metadata[telephone]=${encodeURIComponent(params.telephone || '')}`);
 
-            if (params.ca_actuel) {
-                calParams.push(`metadata[ca_actuel]=${encodeURIComponent(params.ca_actuel)}`);
-            }
+            // CA Actuel
+            calParams.push(`metadata[ca_actuel]=${encodeURIComponent(params.ca_actuel || '')}`);
 
-            if (params.ca_objectif) {
-                calParams.push(`metadata[ca_objectif]=${encodeURIComponent(params.ca_objectif)}`);
-            }
+            // CA Objectif
+            calParams.push(`metadata[ca_objectif]=${encodeURIComponent(params.ca_objectif || '')}`);
 
+            // Motivation
             if (params.motivation) {
                 // Limiter à 500 caractères pour l'URL
                 const motivationShort = params.motivation.substring(0, 500);
                 calParams.push(`metadata[motivation]=${encodeURIComponent(motivationShort)}`);
+            } else {
+                calParams.push(`metadata[motivation]=`);
             }
 
-            if (params.pret) {
-                calParams.push(`metadata[pret]=${encodeURIComponent(params.pret)}`);
-            }
+            // Prêt
+            calParams.push(`metadata[pret]=${encodeURIComponent(params.pret || '')}`);
 
             // Combiner tous les paramètres
             if (calParams.length > 0) {
