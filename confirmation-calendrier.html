@@ -248,10 +248,19 @@
             // 📱 FORCER L'AFFICHAGE MOBILE (COLUMN VIEW) MÊME SUR ORDINATEUR
             calParams.set('layout', 'column_view');
 
+            // Champs standards Cal.com (passés directement)
+            const standardFields = ['name', 'email', 'attendeePhoneNumber', 'layout'];
+
             // Copier TOUS les paramètres de l'URL vers Cal.com
             for (const [key, value] of urlParams.entries()) {
                 if (value) { // Seulement si la valeur n'est pas vide
-                    calParams.set(key, value);
+                    // Si c'est un champ standard Cal.com, le passer directement
+                    if (standardFields.includes(key)) {
+                        calParams.set(key, value);
+                    } else {
+                        // Sinon, le passer en tant que metadata
+                        calParams.set(`metadata[${key}]`, value);
+                    }
                 }
             }
 
