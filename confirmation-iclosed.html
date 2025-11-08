@@ -67,21 +67,21 @@
             margin: 0 0 30px 0;
         }
 
-        .calendly-container {
+        .iclosed-container {
             overflow: hidden;
             background: white;
-            min-height: 700px;
-            /* Centrer et limiter la largeur pour garder un format mobile */
-            max-width: 450px;
+            min-height: 620px;
+            max-width: 900px;
             margin: 0 auto;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
 
-        .cal-iframe {
+        .iclosed-iframe {
             width: 100%;
-            height: 700px;
+            height: 620px;
             border: none;
+            border-radius: 20px;
         }
 
         .loading {
@@ -89,7 +89,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 700px;
+            height: 620px;
             color: #667eea;
             padding: 40px;
         }
@@ -107,6 +107,32 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* DEBUG Box */
+        .debug-box {
+            background: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            word-break: break-all;
+            display: none;
+        }
+
+        .debug-box strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .debug-box a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .debug-box a:hover {
+            text-decoration: underline;
         }
 
         .footer {
@@ -179,11 +205,11 @@
                 gap: 20px;
             }
 
-            .calendly-container {
+            .iclosed-container {
                 max-width: 100%;
             }
 
-            .cal-iframe {
+            .iclosed-iframe {
                 height: 750px;
             }
         }
@@ -201,23 +227,28 @@
             <h2 class="reservation-title">Réservez votre session de scaling</h2>
 
             <!-- DEBUG: Afficher l'URL générée -->
-            <div id="debug-url" style="background: #f0f0f0; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-size: 12px; word-break: break-all; display: none;">
-                <strong>🔗 URL Cal.com générée :</strong><br>
-                <a id="debug-link" href="#" target="_blank" style="color: #667eea;"></a>
+            <div id="debug-url" class="debug-box">
+                <strong>🔗 URL iClosed générée :</strong>
+                <a id="debug-link" href="#" target="_blank"></a>
             </div>
 
-            <div class="calendly-container">
+            <div class="iclosed-container">
                 <div class="loading" id="loading">
                     <div class="loading-spinner"></div>
                     <p>Chargement de votre calendrier personnalisé...</p>
                 </div>
 
-                <!-- IFRAME CAL.COM -->
+                <!-- IFRAME ICLOSED -->
                 <iframe
-                    id="cal-iframe"
-                    class="cal-iframe"
+                    id="iclosed-event"
+                    class="iclosed-iframe"
                     style="display: none;"
-                    loading="lazy">
+                    title="Appel Candidature - Scaling Playbook"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    frameborder="0"
+                    scrolling="auto"
+                    allowfullscreen
+                    sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
                 </iframe>
             </div>
         </div>
@@ -240,89 +271,127 @@
     </div>
 
     <script>
-        // 🔹 CONSTRUIRE L'URL CAL.COM AVEC TOUS LES PARAMÈTRES DE L'URL
-        function buildCalURL() {
-            // URL de base Cal.com
-            let calURL = 'https://cal.com/scaling-acquisition/tesstttt';
+    (function() {
+        'use strict';
+
+        // 🔹 CONSTRUIRE L'URL ICLOSED AVEC TOUS LES PARAMÈTRES DE L'URL
+        function buildIClosedURL() {
+            // URL de base iClosed
+            const baseUrl = 'https://app.iclosed.io/e/valere/call-scaling-playbook';
 
             // Récupérer TOUS les paramètres de l'URL actuelle
-            const urlParams = new URLSearchParams(window.location.search);
+            const pageParams = new URLSearchParams(window.location.search);
 
-            // Créer une nouvelle liste de paramètres pour Cal.com
-            const calParams = new URLSearchParams();
+            // Créer les paramètres pour iClosed
+            const iClosedParams = new URLSearchParams();
 
-            // 📱 FORCER L'AFFICHAGE MOBILE (COLUMN VIEW) MÊME SUR ORDINATEUR
-            calParams.set('layout', 'column_view');
+            // 🔹 MAPPING des champs standards vers les noms iClosed
+            const fieldMapping = {
+                'firstname': 'iclosedFirstname',
+                'name': 'iclosedName',
+                'email': 'iclosedEmail',
+                'phone': 'iclosedPhone'
+            };
 
-            // Champs standards Cal.com (passés directement)
-            const standardFields = ['name', 'email', 'attendeePhoneNumber', 'layout'];
-
-            // Copier TOUS les paramètres de l'URL vers Cal.com
-            for (const [key, value] of urlParams.entries()) {
-                if (value) { // Seulement si la valeur n'est pas vide
-                    // Si c'est un champ standard Cal.com, le passer directement
-                    if (standardFields.includes(key)) {
-                        calParams.set(key, value);
-                    } else {
-                        // Sinon, le passer en tant que metadata
-                        calParams.set(`metadata[${key}]`, value);
-                    }
+            // Copier TOUS les paramètres de l'URL
+            for (const [key, value] of pageParams.entries()) {
+                if (value) { // Seulement si non vide
+                    // Utiliser le mapping si disponible, sinon garder le nom original
+                    const iClosedKey = fieldMapping[key] || key;
+                    iClosedParams.set(iClosedKey, value);
                 }
             }
 
             // Construire l'URL finale
-            const queryString = calParams.toString();
-            if (queryString) {
-                calURL += '?' + queryString;
-            }
+            const finalUrl = baseUrl + '?' + iClosedParams.toString();
 
-            return calURL;
+            return finalUrl;
         }
 
         // 🔹 INITIALISER
         function init() {
-            // Récupérer les paramètres de l'URL de la page
+            console.log('🚀 Initialisation iClosed...');
+
+            // Récupérer les paramètres de la page pour debug
             const pageParams = new URLSearchParams(window.location.search);
             console.log('📋 Paramètres de la page:', Object.fromEntries(pageParams));
 
-            // Construire l'URL Cal.com avec tous les paramètres de l'URL
-            const calURL = buildCalURL();
+            // Construire l'URL iClosed
+            const iClosedURL = buildIClosedURL();
 
-            console.log('🔗 URL Cal.com générée:', calURL);
-            console.log('📊 Longueur de l\'URL:', calURL.length);
+            console.log('🔗 URL iClosed générée:', iClosedURL);
+            console.log('📊 Longueur de l\'URL:', iClosedURL.length);
 
-            // Afficher l'URL dans le titre pour debug (temporaire)
-            document.title = 'Cal.com - ' + (pageParams.get('name') || 'Réservation');
+            // Afficher l'URL dans le titre pour debug
+            const userName = pageParams.get('firstname') || pageParams.get('name') || 'Réservation';
+            document.title = 'iClosed - ' + userName;
 
             // Afficher l'URL générée sur la page (DEBUG)
             const debugDiv = document.getElementById('debug-url');
             const debugLink = document.getElementById('debug-link');
             if (debugDiv && debugLink) {
                 debugDiv.style.display = 'block';
-                debugLink.href = calURL;
-                debugLink.textContent = calURL;
+                debugLink.href = iClosedURL;
+                debugLink.textContent = iClosedURL;
             }
 
             // Injecter l'URL dans l'iframe
-            const iframe = document.getElementById('cal-iframe');
-            iframe.src = calURL;
-
-            console.log('✅ URL injectée dans l\'iframe');
+            const iframe = document.getElementById('iclosed-event');
+            if (iframe) {
+                iframe.src = iClosedURL;
+                console.log('✅ URL injectée dans l\'iframe iClosed');
+            } else {
+                console.error('❌ Iframe iClosed introuvable !');
+            }
 
             // Masquer le loading après 2 secondes
             setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-                iframe.style.display = 'block';
-                console.log('✅ Calendrier affiché !');
+                const loading = document.getElementById('loading');
+                if (loading) loading.style.display = 'none';
+                if (iframe) iframe.style.display = 'block';
+                console.log('✅ Calendrier iClosed affiché !');
             }, 2000);
         }
 
-        // Démarrer dès que le DOM est prêt
+        // 🔹 LISTENER pour la communication avec iClosed
+        window.addEventListener('message', function(event) {
+            // Vérifier que le message vient bien d'iClosed
+            if (event.origin !== 'https://app.iclosed.io') {
+                return;
+            }
+
+            console.log('📨 Message reçu d\'iClosed:', event.data);
+
+            // Ajustement dynamique de la hauteur
+            if (event.data.type === 'iclosed.widget_height') {
+                const iframe = document.getElementById('iclosed-event');
+                if (iframe && event.data.height) {
+                    iframe.style.height = event.data.height + 'px';
+                    console.log('📏 Hauteur iframe ajustée à:', event.data.height + 'px');
+
+                    // Scroll si l'iframe est au-dessus de la zone visible
+                    if (iframe.getBoundingClientRect().top < 0) {
+                        iframe.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            }
+
+            // Ouvrir un lien dans le parent
+            if (event.data.type === 'openInParentTab') {
+                if (event.data.url) {
+                    console.log('🔗 Ouverture URL dans parent:', event.data.url);
+                    window.open(event.data.url, '_self');
+                }
+            }
+        });
+
+        // 🔹 Démarrer dès que le DOM est prêt
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
             init();
         }
+    })();
     </script>
 </body>
 </html>
