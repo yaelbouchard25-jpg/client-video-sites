@@ -200,6 +200,12 @@
         <div class="section">
             <h2 class="reservation-title">Réservez votre session de scaling</h2>
 
+            <!-- DEBUG: Afficher l'URL générée -->
+            <div id="debug-url" style="background: #f0f0f0; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-size: 12px; word-break: break-all; display: none;">
+                <strong>🔗 URL Cal.com générée :</strong><br>
+                <a id="debug-link" href="#" target="_blank" style="color: #667eea;"></a>
+            </div>
+
             <div class="calendly-container">
                 <div class="loading" id="loading">
                     <div class="loading-spinner"></div>
@@ -275,14 +281,33 @@
 
         // 🔹 INITIALISER
         function init() {
+            // Récupérer les paramètres de l'URL de la page
+            const pageParams = new URLSearchParams(window.location.search);
+            console.log('📋 Paramètres de la page:', Object.fromEntries(pageParams));
+
             // Construire l'URL Cal.com avec tous les paramètres de l'URL
             const calURL = buildCalURL();
 
             console.log('🔗 URL Cal.com générée:', calURL);
+            console.log('📊 Longueur de l\'URL:', calURL.length);
+
+            // Afficher l'URL dans le titre pour debug (temporaire)
+            document.title = 'Cal.com - ' + (pageParams.get('name') || 'Réservation');
+
+            // Afficher l'URL générée sur la page (DEBUG)
+            const debugDiv = document.getElementById('debug-url');
+            const debugLink = document.getElementById('debug-link');
+            if (debugDiv && debugLink) {
+                debugDiv.style.display = 'block';
+                debugLink.href = calURL;
+                debugLink.textContent = calURL;
+            }
 
             // Injecter l'URL dans l'iframe
             const iframe = document.getElementById('cal-iframe');
             iframe.src = calURL;
+
+            console.log('✅ URL injectée dans l\'iframe');
 
             // Masquer le loading après 2 secondes
             setTimeout(() => {
