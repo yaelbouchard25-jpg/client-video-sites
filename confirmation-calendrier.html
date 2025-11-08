@@ -248,9 +248,6 @@
             // URL de base de votre calendrier Cal.com
             baseURL: 'https://cal.com/scaling-acquisition/tesstttt',
 
-            // Champs standards Cal.com (passés directement sans metadata[])
-            standardFields: ['name', 'email', 'attendeePhoneNumber', 'layout'],
-
             // Layout par défaut (column_view = affichage mobile)
             defaultLayout: 'column_view'
         };
@@ -259,11 +256,10 @@
         // 🔹 MAPPING DES CHAMPS (optionnel)
         // ============================================
         // Si vous voulez renommer des champs avant de les envoyer à Cal.com
-        // Exemple: 'prenom' → 'name', 'telephone' → 'attendeePhoneNumber'
+        // Exemple: 'telephone' → 'phone'
 
         const FIELD_MAPPING = {
-            // 'prenom': 'name',
-            // 'telephone': 'attendeePhoneNumber'
+            // 'telephone': 'phone'
         };
 
         // ============================================
@@ -278,19 +274,21 @@
             // Forcer le layout column_view (affichage mobile)
             calParams.set('layout', CAL_CONFIG.defaultLayout);
 
+            // ⚠️ RÈGLE CAL.COM : Le paramètre "name" est OBLIGATOIRE pour que le prefill fonctionne
+            // Si "name" n'existe pas, utiliser "prenom" comme fallback
+            if (!pageParams.has('name') && pageParams.has('prenom')) {
+                calParams.set('name', pageParams.get('prenom'));
+                console.log('✅ Paramètre "name" ajouté depuis "prenom"');
+            }
+
             // Copier TOUS les paramètres de l'URL vers Cal.com
             for (const [key, value] of pageParams.entries()) {
                 if (value) { // Seulement si la valeur n'est pas vide
                     // Appliquer le mapping si défini
                     const calKey = FIELD_MAPPING[key] || key;
 
-                    // Si c'est un champ standard Cal.com, le passer directement
-                    if (CAL_CONFIG.standardFields.includes(calKey)) {
-                        calParams.set(calKey, value);
-                    } else {
-                        // Sinon, le passer en tant que metadata[champ]
-                        calParams.set(`metadata[${calKey}]`, value);
-                    }
+                    // ✅ Passer TOUS les paramètres directement (format Cal.com standard)
+                    calParams.set(calKey, value);
                 }
             }
 
