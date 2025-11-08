@@ -234,76 +234,31 @@
     </div>
 
     <script>
-        // 🔹 RÉCUPÉRER LES PARAMÈTRES URL
-        function getURLParams() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return {
-                name: urlParams.get('name') || '',
-                email: urlParams.get('email') || '',
-                confirmation: urlParams.get('confirmation') || '',
-                telephone: urlParams.get('telephone') || '',
-                ca_actuel: urlParams.get('ca_actuel') || '',
-                ca_objectif: urlParams.get('ca_objectif') || '',
-                motivation: urlParams.get('motivation') || '',
-                pret: urlParams.get('pret') || '',
-                attendeePhoneNumber: urlParams.get('attendeePhoneNumber') || ''
-            };
-        }
-
-        // 🔹 CONSTRUIRE L'URL CAL.COM AVEC TOUS LES PARAMÈTRES
-        function buildCalURL(params) {
+        // 🔹 CONSTRUIRE L'URL CAL.COM AVEC TOUS LES PARAMÈTRES DE L'URL
+        function buildCalURL() {
             // URL de base Cal.com
             let calURL = 'https://cal.com/scaling-acquisition/tesstttt';
 
-            const calParams = [];
+            // Récupérer TOUS les paramètres de l'URL actuelle
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Créer une nouvelle liste de paramètres pour Cal.com
+            const calParams = new URLSearchParams();
 
             // 📱 FORCER L'AFFICHAGE MOBILE (COLUMN VIEW) MÊME SUR ORDINATEUR
-            calParams.push('layout=column_view');
+            calParams.set('layout', 'column_view');
 
-            // Nom et email (standards Cal.com)
-            if (params.name) {
-                calParams.push(`name=${encodeURIComponent(params.name)}`);
+            // Copier TOUS les paramètres de l'URL vers Cal.com
+            for (const [key, value] of urlParams.entries()) {
+                if (value) { // Seulement si la valeur n'est pas vide
+                    calParams.set(key, value);
+                }
             }
 
-            if (params.email) {
-                calParams.push(`email=${encodeURIComponent(params.email)}`);
-            }
-
-            // Numéro de téléphone (champ standard Cal.com)
-            if (params.attendeePhoneNumber) {
-                calParams.push(`attendeePhoneNumber=${encodeURIComponent(params.attendeePhoneNumber)}`);
-            }
-
-            // Métadonnées (toutes les autres infos) - SEULEMENT SI NON VIDES
-            if (params.confirmation) {
-                calParams.push(`metadata[confirmation]=${encodeURIComponent(params.confirmation)}`);
-            }
-
-            if (params.telephone) {
-                calParams.push(`metadata[telephone]=${encodeURIComponent(params.telephone)}`);
-            }
-
-            if (params.ca_actuel) {
-                calParams.push(`metadata[ca_actuel]=${encodeURIComponent(params.ca_actuel)}`);
-            }
-
-            if (params.ca_objectif) {
-                calParams.push(`metadata[ca_objectif]=${encodeURIComponent(params.ca_objectif)}`);
-            }
-
-            if (params.motivation) {
-                // Limiter à 500 caractères pour l'URL
-                const motivationShort = params.motivation.substring(0, 500);
-                calParams.push(`metadata[motivation]=${encodeURIComponent(motivationShort)}`);
-            }
-
-            if (params.pret) {
-                calParams.push(`metadata[pret]=${encodeURIComponent(params.pret)}`);
-            }
-
-            // Combiner tous les paramètres
-            if (calParams.length > 0) {
-                calURL += '?' + calParams.join('&');
+            // Construire l'URL finale
+            const queryString = calParams.toString();
+            if (queryString) {
+                calURL += '?' + queryString;
             }
 
             return calURL;
@@ -311,12 +266,8 @@
 
         // 🔹 INITIALISER
         function init() {
-            const params = getURLParams();
-
-            console.log('📊 Paramètres récupérés:', params);
-
-            // Construire l'URL Cal.com
-            const calURL = buildCalURL(params);
+            // Construire l'URL Cal.com avec tous les paramètres de l'URL
+            const calURL = buildCalURL();
 
             console.log('🔗 URL Cal.com générée:', calURL);
 
