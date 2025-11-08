@@ -240,61 +240,84 @@
     </div>
 
     <script>
-        // 🔹 CONSTRUIRE L'URL CAL.COM AVEC TOUS LES PARAMÈTRES DE L'URL
+        // ============================================
+        // 🔹 CONFIGURATION CAL.COM
+        // ============================================
+
+        const CAL_CONFIG = {
+            // URL de base de votre calendrier Cal.com
+            baseURL: 'https://cal.com/scaling-acquisition/tesstttt',
+
+            // Champs standards Cal.com (passés directement sans metadata[])
+            standardFields: ['name', 'email', 'attendeePhoneNumber', 'layout'],
+
+            // Layout par défaut (column_view = affichage mobile)
+            defaultLayout: 'column_view'
+        };
+
+        // ============================================
+        // 🔹 MAPPING DES CHAMPS (optionnel)
+        // ============================================
+        // Si vous voulez renommer des champs avant de les envoyer à Cal.com
+        // Exemple: 'prenom' → 'name', 'telephone' → 'attendeePhoneNumber'
+
+        const FIELD_MAPPING = {
+            // 'prenom': 'name',
+            // 'telephone': 'attendeePhoneNumber'
+        };
+
+        // ============================================
+        // 🔹 CONSTRUCTION DE L'URL CAL.COM
+        // ============================================
+
         function buildCalURL() {
-            // URL de base Cal.com
-            let calURL = 'https://cal.com/scaling-acquisition/tesstttt';
-
-            // Récupérer TOUS les paramètres de l'URL actuelle
-            const urlParams = new URLSearchParams(window.location.search);
-
-            // Créer une nouvelle liste de paramètres pour Cal.com
+            const baseUrl = CAL_CONFIG.baseURL;
+            const pageParams = new URLSearchParams(window.location.search);
             const calParams = new URLSearchParams();
 
-            // 📱 FORCER L'AFFICHAGE MOBILE (COLUMN VIEW) MÊME SUR ORDINATEUR
-            calParams.set('layout', 'column_view');
-
-            // Champs standards Cal.com (passés directement)
-            const standardFields = ['name', 'email', 'attendeePhoneNumber', 'layout'];
+            // Forcer le layout column_view (affichage mobile)
+            calParams.set('layout', CAL_CONFIG.defaultLayout);
 
             // Copier TOUS les paramètres de l'URL vers Cal.com
-            for (const [key, value] of urlParams.entries()) {
+            for (const [key, value] of pageParams.entries()) {
                 if (value) { // Seulement si la valeur n'est pas vide
+                    // Appliquer le mapping si défini
+                    const calKey = FIELD_MAPPING[key] || key;
+
                     // Si c'est un champ standard Cal.com, le passer directement
-                    if (standardFields.includes(key)) {
-                        calParams.set(key, value);
+                    if (CAL_CONFIG.standardFields.includes(calKey)) {
+                        calParams.set(calKey, value);
                     } else {
-                        // Sinon, le passer en tant que metadata
-                        calParams.set(`metadata[${key}]`, value);
+                        // Sinon, le passer en tant que metadata[champ]
+                        calParams.set(`metadata[${calKey}]`, value);
                     }
                 }
             }
 
-            // Construire l'URL finale
             const queryString = calParams.toString();
-            if (queryString) {
-                calURL += '?' + queryString;
-            }
-
-            return calURL;
+            return queryString ? `${baseUrl}?${queryString}` : baseUrl;
         }
 
-        // 🔹 INITIALISER
-        function init() {
-            // Récupérer les paramètres de l'URL de la page
-            const pageParams = new URLSearchParams(window.location.search);
-            console.log('📋 Paramètres de la page:', Object.fromEntries(pageParams));
+        // ============================================
+        // 🔹 INITIALISATION DE LA PAGE
+        // ============================================
 
-            // Construire l'URL Cal.com avec tous les paramètres de l'URL
+        function init() {
+            const pageParams = new URLSearchParams(window.location.search);
+
+            // Construire l'URL Cal.com avec tous les paramètres
             const calURL = buildCalURL();
 
+            // Logs de debug
+            console.log('📋 Paramètres de la page:', Object.fromEntries(pageParams));
             console.log('🔗 URL Cal.com générée:', calURL);
             console.log('📊 Longueur de l\'URL:', calURL.length);
 
-            // Afficher l'URL dans le titre pour debug (temporaire)
-            document.title = 'Cal.com - ' + (pageParams.get('name') || 'Réservation');
+            // Mettre à jour le titre de la page
+            const userName = pageParams.get('name') || pageParams.get('prenom') || 'Réservation';
+            document.title = `${userName} - Scaling.io`;
 
-            // Afficher l'URL générée sur la page (DEBUG)
+            // Afficher l'URL générée dans la box de debug
             const debugDiv = document.getElementById('debug-url');
             const debugLink = document.getElementById('debug-link');
             if (debugDiv && debugLink) {
@@ -305,19 +328,51 @@
 
             // Injecter l'URL dans l'iframe
             const iframe = document.getElementById('cal-iframe');
-            iframe.src = calURL;
+            if (iframe) {
+                iframe.src = calURL;
+                console.log('✅ URL injectée dans l\'iframe');
+            }
 
-            console.log('✅ URL injectée dans l\'iframe');
-
-            // Masquer le loading après 2 secondes
+            // Masquer le loading et afficher le calendrier après 2 secondes
             setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-                iframe.style.display = 'block';
-                console.log('✅ Calendrier affiché !');
+                const loading = document.getElementById('loading');
+                if (loading) loading.style.display = 'none';
+                if (iframe) {
+                    iframe.style.display = 'block';
+                    console.log('✅ Calendrier Cal.com affiché !');
+                }
             }, 2000);
         }
 
-        // Démarrer dès que le DOM est prêt
+        // ============================================
+        // 🔹 LISTENER POUR MESSAGES DE CAL.COM
+        // ============================================
+        // Cal.com peut envoyer des messages pour ajuster la hauteur de l'iframe
+
+        window.addEventListener('message', function(event) {
+            // Vérifier que le message vient de Cal.com
+            if (!event.origin.includes('cal.com')) return;
+
+            const iframe = document.getElementById('cal-iframe');
+            if (!iframe) return;
+
+            // Gérer les différents types de messages de Cal.com
+            if (event.data && typeof event.data === 'object') {
+                // Ajustement de hauteur
+                if (event.data.type === 'resize' && event.data.height) {
+                    iframe.style.height = event.data.height + 'px';
+                    console.log('📏 Hauteur iframe ajustée:', event.data.height + 'px');
+                }
+
+                // Autres messages Cal.com...
+                console.log('📨 Message Cal.com reçu:', event.data);
+            }
+        });
+
+        // ============================================
+        // 🔹 DÉMARRAGE
+        // ============================================
+
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
