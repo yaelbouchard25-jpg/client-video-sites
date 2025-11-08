@@ -252,7 +252,12 @@
             standardFields: ['name', 'email', 'attendeePhoneNumber', 'layout'],
 
             // Layout par défaut (column_view = affichage mobile)
-            defaultLayout: 'column_view'
+            defaultLayout: 'column_view',
+
+            // ⚡ MODE "TOUT DANS DATA"
+            // Si true: Met TOUS les paramètres dans un seul champ "data"
+            // Si false: Chaque paramètre est envoyé séparément
+            allInOneDataField: true
         };
 
         // ============================================
@@ -278,18 +283,47 @@
             // Forcer le layout column_view (affichage mobile)
             calParams.set('layout', CAL_CONFIG.defaultLayout);
 
-            // Copier TOUS les paramètres de l'URL vers Cal.com
-            for (const [key, value] of pageParams.entries()) {
-                if (value) { // Seulement si la valeur n'est pas vide
-                    // Appliquer le mapping si défini
-                    const calKey = FIELD_MAPPING[key] || key;
+            // ⚡ MODE "TOUT DANS DATA"
+            if (CAL_CONFIG.allInOneDataField) {
+                // Récupérer TOUS les paramètres et les mettre dans un objet
+                const allData = {};
+                for (const [key, value] of pageParams.entries()) {
+                    if (value) {
+                        allData[key] = value;
+                    }
+                }
 
-                    // Si c'est un champ standard Cal.com, le passer directement
-                    if (CAL_CONFIG.standardFields.includes(calKey)) {
-                        calParams.set(calKey, value);
-                    } else {
-                        // Sinon, le passer en tant que metadata[champ]
-                        calParams.set(`metadata[${calKey}]`, value);
+                // Garder les champs standards séparés si présents
+                if (allData.name) {
+                    calParams.set('name', allData.name);
+                }
+                if (allData.email) {
+                    calParams.set('email', allData.email);
+                }
+                if (allData.attendeePhoneNumber) {
+                    calParams.set('attendeePhoneNumber', allData.attendeePhoneNumber);
+                }
+
+                // Mettre TOUT dans le champ "data" au format JSON
+                if (Object.keys(allData).length > 0) {
+                    calParams.set('metadata[data]', JSON.stringify(allData));
+                }
+            }
+            // MODE NORMAL: chaque paramètre séparé
+            else {
+                // Copier TOUS les paramètres de l'URL vers Cal.com
+                for (const [key, value] of pageParams.entries()) {
+                    if (value) { // Seulement si la valeur n'est pas vide
+                        // Appliquer le mapping si défini
+                        const calKey = FIELD_MAPPING[key] || key;
+
+                        // Si c'est un champ standard Cal.com, le passer directement
+                        if (CAL_CONFIG.standardFields.includes(calKey)) {
+                            calParams.set(calKey, value);
+                        } else {
+                            // Sinon, le passer en tant que metadata[champ]
+                            calParams.set(`metadata[${calKey}]`, value);
+                        }
                     }
                 }
             }
