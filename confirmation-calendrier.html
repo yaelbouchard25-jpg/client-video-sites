@@ -238,15 +238,15 @@
         function getURLParams() {
             const urlParams = new URLSearchParams(window.location.search);
             return {
-                prenom: urlParams.get('prenom') || '',
+                name: urlParams.get('name') || '',
                 email: urlParams.get('email') || '',
-                source: urlParams.get('source') || '',
                 confirmation: urlParams.get('confirmation') || '',
                 telephone: urlParams.get('telephone') || '',
                 ca_actuel: urlParams.get('ca_actuel') || '',
                 ca_objectif: urlParams.get('ca_objectif') || '',
                 motivation: urlParams.get('motivation') || '',
-                pret: urlParams.get('pret') || ''
+                pret: urlParams.get('pret') || '',
+                attendeePhoneNumber: urlParams.get('attendeePhoneNumber') || ''
             };
         }
 
@@ -261,19 +261,20 @@
             calParams.push('layout=column_view');
 
             // Nom et email (standards Cal.com)
-            if (params.prenom) {
-                calParams.push(`name=${encodeURIComponent(params.prenom)}`);
+            if (params.name) {
+                calParams.push(`name=${encodeURIComponent(params.name)}`);
             }
 
             if (params.email) {
                 calParams.push(`email=${encodeURIComponent(params.email)}`);
             }
 
-            // Métadonnées (toutes les autres infos) - SEULEMENT SI NON VIDES
-            if (params.source) {
-                calParams.push(`metadata[source]=${encodeURIComponent(params.source)}`);
+            // Numéro de téléphone (champ standard Cal.com)
+            if (params.attendeePhoneNumber) {
+                calParams.push(`attendeePhoneNumber=${encodeURIComponent(params.attendeePhoneNumber)}`);
             }
 
+            // Métadonnées (toutes les autres infos) - SEULEMENT SI NON VIDES
             if (params.confirmation) {
                 calParams.push(`metadata[confirmation]=${encodeURIComponent(params.confirmation)}`);
             }
