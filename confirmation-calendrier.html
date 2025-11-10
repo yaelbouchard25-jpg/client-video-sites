@@ -245,21 +245,20 @@
         // ============================================
 
         const CAL_CONFIG = {
-            // URL de base de votre calendrier Cal.com
             baseURL: 'https://cal.com/scaling-acquisition/tesstttt',
-
-            // Layout par défaut (column_view = affichage mobile)
             defaultLayout: 'column_view'
         };
 
         // ============================================
-        // 🔹 MAPPING DES CHAMPS (optionnel)
+        // 🔹 MAPPING DES IDENTIFIERS CAL.COM
         // ============================================
-        // Si vous voulez renommer des champs avant de les envoyer à Cal.com
-        // Exemple: 'telephone' → 'phone'
+        // Définir ici la correspondance exacte entre tes paramètres URL
+        // et les identifiers Cal.com (si différents)
 
-        const FIELD_MAPPING = {
-            // 'telephone': 'phone'
+        const IDENTIFIER_MAPPING = {
+            // Format: 'parametre_url': 'identifier_calcom'
+            // Exemple : 'telephone': 'phone',
+            // Laisse vide si les noms sont identiques
         };
 
         // ============================================
@@ -271,29 +270,91 @@
             const pageParams = new URLSearchParams(window.location.search);
             const calParams = new URLSearchParams();
 
-            // Forcer le layout column_view (affichage mobile)
+            // 1️⃣ Forcer le layout mobile
             calParams.set('layout', CAL_CONFIG.defaultLayout);
 
-            // ⚠️ RÈGLE CAL.COM : Le paramètre "name" est OBLIGATOIRE pour que le prefill fonctionne
-            // Si "name" n'existe pas, utiliser "prenom" comme fallback
-            if (!pageParams.has('name') && pageParams.has('prenom')) {
-                calParams.set('name', pageParams.get('prenom'));
-                console.log('✅ Paramètre "name" ajouté depuis "prenom"');
-            }
+            // 2️⃣ ⚠️ RÈGLE CRITIQUE : Ajouter "name" obligatoirement
+            // Cal.com IGNORE tous les autres paramètres si "name" n'est pas présent
+            let nameParam = pageParams.get('name');
 
-            // Copier TOUS les paramètres de l'URL vers Cal.com
-            for (const [key, value] of pageParams.entries()) {
-                if (value) { // Seulement si la valeur n'est pas vide
-                    // Appliquer le mapping si défini
-                    const calKey = FIELD_MAPPING[key] || key;
-
-                    // ✅ Passer TOUS les paramètres directement (format Cal.com standard)
-                    calParams.set(calKey, value);
+            if (!nameParam) {
+                // Si "name" n'existe pas, essayer "prenom"
+                nameParam = pageParams.get('prenom');
+                if (nameParam) {
+                    console.log('✅ "name" créé depuis "prenom":', nameParam);
                 }
             }
 
+            if (nameParam) {
+                calParams.set('name', nameParam);
+            } else {
+                console.warn('⚠️ ATTENTION : Aucun paramètre "name" ou "prenom" trouvé !');
+                console.warn('⚠️ Le prefill Cal.com ne fonctionnera PAS sans ce paramètre.');
+            }
+
+            // 3️⃣ Copier TOUS les paramètres vers Cal.com
+            let paramCount = 0;
+
+            for (const [key, value] of pageParams.entries()) {
+                // Ignorer les paramètres vides
+                if (!value || value.trim() === '') {
+                    console.log(`⏭️  Ignoré (vide): ${key}`);
+                    continue;
+                }
+
+                // Appliquer le mapping d'identifier si défini
+                const calKey = IDENTIFIER_MAPPING[key] || key;
+
+                // Ajouter le paramètre (format standard Cal.com)
+                calParams.set(calKey, value);
+                paramCount++;
+
+                console.log(`✅ Ajouté: ${calKey} = ${value.substring(0, 30)}...`);
+            }
+
+            console.log(`📊 Total de paramètres transmis à Cal.com: ${paramCount}`);
+
+            // 4️⃣ Construire l'URL finale
             const queryString = calParams.toString();
-            return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+            const finalURL = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+
+            console.log('🔗 URL Cal.com finale:', finalURL);
+            console.log('📏 Longueur totale:', finalURL.length, 'caractères');
+
+            if (finalURL.length > 2000) {
+                console.warn('⚠️ URL très longue ! Risque de problèmes avec certains navigateurs.');
+            }
+
+            return finalURL;
+        }
+
+        // ============================================
+        // 🔹 VALIDATION DES DONNÉES
+        // ============================================
+
+        function validateData() {
+            const pageParams = new URLSearchParams(window.location.search);
+            const issues = [];
+
+            // Vérifier la présence de "name" ou "prenom"
+            if (!pageParams.has('name') && !pageParams.has('prenom')) {
+                issues.push('❌ CRITIQUE : Paramètre "name" ou "prenom" manquant');
+            }
+
+            // Vérifier la présence d'email
+            if (!pageParams.has('email')) {
+                issues.push('⚠️  Paramètre "email" manquant');
+            }
+
+            // Afficher les résultats
+            if (issues.length > 0) {
+                console.error('🔴 PROBLÈMES DÉTECTÉS:');
+                issues.forEach(issue => console.error(issue));
+                return false;
+            } else {
+                console.log('✅ Validation OK : Tous les paramètres requis sont présents');
+                return true;
+            }
         }
 
         // ============================================
@@ -301,19 +362,27 @@
         // ============================================
 
         function init() {
+            console.log('🚀 Initialisation de la page Cal.com');
+            console.log('📅 Date:', new Date().toLocaleString('fr-FR'));
+
             const pageParams = new URLSearchParams(window.location.search);
 
-            // Construire l'URL Cal.com avec tous les paramètres
-            const calURL = buildCalURL();
+            // Log tous les paramètres reçus
+            console.log('📋 Paramètres URL reçus:');
+            for (const [key, value] of pageParams.entries()) {
+                console.log(`   - ${key}: ${value.substring(0, 50)}${value.length > 50 ? '...' : ''}`);
+            }
 
-            // Logs de debug
-            console.log('📋 Paramètres de la page:', Object.fromEntries(pageParams));
-            console.log('🔗 URL Cal.com générée:', calURL);
-            console.log('📊 Longueur de l\'URL:', calURL.length);
+            // Valider les données
+            const isValid = validateData();
+
+            // Construire l'URL Cal.com
+            const calURL = buildCalURL();
 
             // Mettre à jour le titre de la page
             const userName = pageParams.get('name') || pageParams.get('prenom') || 'Réservation';
             document.title = `${userName} - Scaling.io`;
+            console.log('📄 Titre de la page:', document.title);
 
             // Afficher l'URL générée dans la box de debug
             const debugDiv = document.getElementById('debug-url');
@@ -322,48 +391,51 @@
                 debugDiv.style.display = 'block';
                 debugLink.href = calURL;
                 debugLink.textContent = calURL;
+                console.log('🐛 Box debug affichée');
             }
 
             // Injecter l'URL dans l'iframe
             const iframe = document.getElementById('cal-iframe');
             if (iframe) {
                 iframe.src = calURL;
-                console.log('✅ URL injectée dans l\'iframe');
+                console.log('✅ URL injectée dans l\'iframe Cal.com');
+            } else {
+                console.error('❌ ERREUR : Iframe Cal.com introuvable !');
             }
 
-            // Masquer le loading et afficher le calendrier après 2 secondes
+            // Masquer le loading et afficher le calendrier
             setTimeout(() => {
                 const loading = document.getElementById('loading');
                 if (loading) loading.style.display = 'none';
                 if (iframe) {
                     iframe.style.display = 'block';
-                    console.log('✅ Calendrier Cal.com affiché !');
+                    console.log('✅ Calendrier Cal.com affiché');
                 }
             }, 2000);
+
+            // Résumé final
+            console.log('═══════════════════════════════════════');
+            console.log(isValid ? '✅ INIT RÉUSSIE' : '⚠️  INIT AVEC AVERTISSEMENTS');
+            console.log('═══════════════════════════════════════');
         }
 
         // ============================================
-        // 🔹 LISTENER POUR MESSAGES DE CAL.COM
+        // 🔹 ÉCOUTE DES MESSAGES CAL.COM
         // ============================================
-        // Cal.com peut envoyer des messages pour ajuster la hauteur de l'iframe
 
         window.addEventListener('message', function(event) {
-            // Vérifier que le message vient de Cal.com
             if (!event.origin.includes('cal.com')) return;
 
             const iframe = document.getElementById('cal-iframe');
             if (!iframe) return;
 
-            // Gérer les différents types de messages de Cal.com
             if (event.data && typeof event.data === 'object') {
-                // Ajustement de hauteur
                 if (event.data.type === 'resize' && event.data.height) {
                     iframe.style.height = event.data.height + 'px';
                     console.log('📏 Hauteur iframe ajustée:', event.data.height + 'px');
                 }
 
-                // Autres messages Cal.com...
-                console.log('📨 Message Cal.com reçu:', event.data);
+                console.log('📨 Message Cal.com:', event.data);
             }
         });
 
